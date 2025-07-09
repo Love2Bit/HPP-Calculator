@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiramisu HPP Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .batch-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .calculation-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .price {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        
+        .total-row {
+            background: #ecf0f1;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .summary h3 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+        }
+        
+        .summary .big-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .input-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        input[type="number"] {
+            width: 100px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input[type="text"] {
+            width: 150px;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        input[type="number"]:focus, input[type="text"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .calculator-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 15px;
+        }
+        
+        .calculator-row label {
+            min-width: 200px;
+            font-weight: 500;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            color: #856404;
+        }
+        
+        .per-portion {
+            background: #e8f5e8;
+            border: 1px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .per-portion h3 {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .portion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .portion-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .portion-item .value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #27ae60;
+            margin-bottom: 5px;
+        }
+        
+        .portion-item .label {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .add-ingredient {
+            background: #f8f9fa;
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .ingredient-form {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        
+        .form-row label {
+            min-width: 120px;
+            font-weight: 500;
+        }
+        
+        .custom-ingredient {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .markup-section {
+            background: #e8f4f8;
+            border: 1px solid #3498db;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .markup-section h3 {
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .pricing-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .pricing-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        
+        .pricing-item .label {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍰 Tiramisu HPP Calculator</h1>
+        
+        <div class="batch-info">
+            <h3>📋 Informasi Batch</h3>
+            <p><strong>1 Batch = 9 cup tiramisu @ 180ml</strong></p>
+            <p>Berdasarkan resep dan harga bahan yang tersedia</p>
+        </div>
+
+        <div class="input-section">
+            <h3>🔢 Input Pesanan & Markup</h3>
+            <div class="input-grid">
+                <div>
+                    <div class="calculator-row">
+                        <label for="orderQuantity">Jumlah cup:</label>
+                        <input type="number" id="orderQuantity" value="9" min="1" onchange="calculateHPP()">
+                        <span>cup</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="calculator-row">
+                        <label for="markup">Markup:</label>
+                        <input type="number" id="markup" value="150" min="0" onchange="calculateHPP()">
+                        <span>%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Ingredient Section -->
+        <div class="add-ingredient">
+            <h3>➕ Tambah Bahan Lain</h3>
+            <button class="btn" onclick="toggleIngredientForm()">Tambah Bahan</button>
+            
+            <div class="ingredient-form" id="ingredientForm">
+                <div class="form-row">
+                    <label>Nama Bahan:</label>
+                    <input type="text" id="newIngredientName" placeholder="Contoh: Gula Pasir">
+                </div>
+                <div class="form-row">
+                    <label>Kebutuhan per 9 cup:</label>
+                    <input type="number" id="newIngredientNeed" placeholder="25">
+                    <select id="newIngredientUnit">
+                        <option value="g">gram</option>
+                        <option value="ml">ml</option>
+                        <option value="pcs">pcs</option>
+                        <option value="kg">kg</option>
+                        <option value="l">liter</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label>Harga Total:</label>
+                    <input type="number" id="newIngredientPrice" placeholder="15000">
+                    <span>Rupiah</span>
+                </div>
+                <div class="form-row">
+                    <label>Jumlah Total:</label>
+                    <input type="number" id="newIngredientTotal" placeholder="1000">
+                    <select id="newIngredientTotalUnit">
+                        <option value="g">gram</option>
+                        <option value="ml">ml</option>
+                        <option value="pcs">pcs</option>
+                        <option value="kg">kg</option>
+                        <option value="l">liter</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <button class="btn" onclick="addIngredient()">Tambah</button>
+                    <button class="btn btn-danger" onclick="toggleIngredientForm()">Batal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="calculation-section">
+            <h3 class="section-title">💰 Rincian Harga Bahan per Batch (9 cup)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bahan</th>
+                        <th>Kebutuhan per 9 Cup</th>
+                        <th>Harga Bahan</th>
+                        <th>Harga yang Digunakan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="ingredientTable">
+                    <!-- Will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Detail per Porsi -->
+        <div class="per-portion">
+            <h3>📊 Detail per Porsi (1 Cup)</h3>
+            <div class="portion-grid">
+                <div class="portion-item">
+                    <div class="value" id="portionHPP">Rp 0</div>
+                    <div class="label">HPP per Cup</div>
+                </div>
+                <div class="portion-item">
+                    <div class="value" id="portionIngredientCost">Rp 0</div>
+                    <div class="label">Biaya Bahan</div>
+                </div>
+                <div class="portion-item">
+                    <div class="value" id="portionPackagingCost">Rp 0</div>
+                    <div class="label">Biaya Kemasan</div>
+                </div>
+                <div class="portion-item">
+                    <div class="value" id="portionWeight">180</div>
+                    <div class="label">Volume (ml)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Markup & Pricing Section -->
+        <div class="markup-section">
+            <h3>💲 Perhitungan Harga Jual</h3>
+            <div class="pricing-grid">
+                <div class="pricing-item">
+                    <div class="value" id="sellingPricePerCup">Rp 0</div>
+                    <div class="label">Harga Jual per Cup</div>
+                </div>
+                <div class="pricing-item">
+                    <div class="value" id="profitPerCup">Rp 0</div>
+                    <div class="label">Keuntungan per Cup</div>
+                </div>
+                <div class="pricing-item">
+                    <div class="value" id="totalSellingPrice">Rp 0</div>
+                    <div class="label">Total Harga Jual</div>
+                </div>
+                <div class="pricing-item">
+                    <div class="value" id="totalProfit">Rp 0</div>
+                    <div class="label">Total Keuntungan</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary">
+            <h3>📊 Ringkasan HPP</h3>
+            <div>HPP per Cup: <span class="big-number" id="hppPerCup">Rp 0</span></div>
+            <div>Total HPP untuk <span id="totalCups">9</span> cup: <span class="big-number" id="totalHPP">Rp 0</span></div>
+        </div>
+
+        <div class="note">
+            <strong>📝 Catatan:</strong>
+            <ul>
+                <li>Perhitungan berdasarkan harga bahan yang tercantum</li>
+                <li>Belum termasuk biaya tenaga kerja, listrik, dan overhead lainnya</li>
+                <li>Markup yang disarankan: 100-200% untuk bisnis kuliner</li>
+                <li>Harga jual = HPP + (HPP × Markup%)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Data bahan dan harga
+        let ingredients = [
+            {
+                name: "Rum",
+                needPer9Cup: "22.5 ml",
+                totalPrice: 12500,
+                totalAmount: "60 ml",
+                usedAmount: 22.5/60,
+                isCustom: false
+            },
+            {
+                name: "Mascarpone",
+                needPer9Cup: "100 g",
+                totalPrice: 186000,
+                totalAmount: "1000 g",
+                usedAmount: 100/1000,
+                isCustom: false
+            },
+            {
+                name: "Cream Cheese",
+                needPer9Cup: "100 g",
+                totalPrice: 173000,
+                totalAmount: "1900 g",
+                usedAmount: 100/1900,
+                isCustom: false
+            },
+            {
+                name: "Ellenka Whip Cream Powder",
+                needPer9Cup: "200 g",
+                totalPrice: 29000,
+                totalAmount: "200 g",
+                usedAmount: 200/200,
+                isCustom: false
+            },
+            {
+                name: "Windmolen Cocoa Powder",
+                needPer9Cup: "9 g",
+                totalPrice: 14000,
+                totalAmount: "100 g",
+                usedAmount: 9/100,
+                isCustom: false
+            },
+            {
+                name: "Wadah Cup 180ml",
+                needPer9Cup: "9 pcs",
+                totalPrice: 70000,
+                totalAmount: "100 pcs",
+                usedAmount: 9/100,
+                isCustom: false,
+                isPackaging: true
+            },
+            {
+                name: "Tutup Cup",
+                needPer9Cup: "9 pcs",
+                totalPrice: 45000,
+                totalAmount: "100 pcs",
+                usedAmount: 9/100,
+                isCustom: false,
+                isPackaging: true
+            }
+        ];
+
+        function toggleIngredientForm() {
+            const form = document.getElementById('ingredientForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function addIngredient() {
+            const name = document.getElementById('newIngredientName').value;
+            const need = parseFloat(document.getElementById('newIngredientNeed').value);
+            const unit = document.getElementById('newIngredientUnit').value;
+            const price = parseFloat(document.getElementById('newIngredientPrice').value);
+            const total = parseFloat(document.getElementById('newIngredientTotal').value);
+            const totalUnit = document.getElementById('newIngredientTotalUnit').value;
+
+            if (!name || !need || !price || !total) {
+                alert('Mohon lengkapi semua field!');
+                return;
+            }
+
+            // Convert units to same base if needed
+            let needConverted = need;
+            let totalConverted = total;
+            
+            if (unit === 'kg' && totalUnit === 'g') {
+                needConverted = need * 1000;
+            } else if (unit === 'g' && totalUnit === 'kg') {
+                totalConverted = total * 1000;
+            } else if (unit === 'l' && totalUnit === 'ml') {
+                needConverted = need * 1000;
+            } else if (unit === 'ml' && totalUnit === 'l') {
+                totalConverted = total * 1000;
+            }
+
+            const newIngredient = {
+                name: name,
+                needPer9Cup: `${need} ${unit}`,
+                totalPrice: price,
+                totalAmount: `${total} ${totalUnit}`,
+                usedAmount: needConverted / totalConverted,
+                isCustom: true,
+                isPackaging: false
+            };
+
+            ingredients.push(newIngredient);
+
+            // Clear form
+            document.getElementById('newIngredientName').value = '';
+            document.getElementById('newIngredientNeed').value = '';
+            document.getElementById('newIngredientPrice').value = '';
+            document.getElementById('newIngredientTotal').value = '';
+            
+            toggleIngredientForm();
+            calculateHPP();
+        }
+
+        function removeIngredient(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus bahan ini?')) {
+                ingredients.splice(index, 1);
+                calculateHPP();
+            }
+        }
+
+        function calculateHPP() {
+            const orderQuantity = parseInt(document.getElementById('orderQuantity').value) || 9;
+            const markup = parseFloat(document.getElementById('markup').value) || 150;
+            const batchSize = 9;
+            const batches = orderQuantity / batchSize;
+
+            let totalCostPerBatch = 0;
+            let packagingCostPerBatch = 0;
+            let ingredientCostPerBatch = 0;
+            const tableBody = document.getElementById('ingredientTable');
+            tableBody.innerHTML = '';
+
+            ingredients.forEach((ingredient, index) => {
+                const costUsed = ingredient.totalPrice * ingredient.usedAmount;
+                totalCostPerBatch += costUsed;
+                
+                if (ingredient.isPackaging) {
+                    packagingCostPerBatch += costUsed;
+                } else {
+                    ingredientCostPerBatch += costUsed;
+                }
+
+                const row = tableBody.insertRow();
+                row.className = ingredient.isCustom ? 'custom-ingredient' : '';
+                row.innerHTML = `
+                    <td>${ingredient.name}</td>
+                    <td>${ingredient.needPer9Cup}</td>
+                    <td class="price">Rp ${ingredient.totalPrice.toLocaleString('id-ID')}</td>
+                    <td class="price">Rp ${Math.round(costUsed).toLocaleString('id-ID')}</td>
+                    <td>
+                        ${ingredient.isCustom ? `<button class="btn btn-danger" onclick="removeIngredient(${index})">Hapus</button>` : '-'}
+                    </td>
+                `;
+            });
+
+            // Add total row
+            const totalRow = tableBody.insertRow();
+            totalRow.className = 'total-row';
+            totalRow.innerHTML = `
+                <td colspan="3"><strong>TOTAL HPP per Batch (9 cup)</strong></td>
+                <td class="price"><strong>Rp ${Math.round(totalCostPerBatch).toLocaleString('id-ID')}</strong></td>
+                <td>-</td>
+            `;
+
+            // Calculate per cup and total
+            const hppPerCup = totalCostPerBatch / batchSize;
+            const totalHPP = hppPerCup * orderQuantity;
+
+            // Calculate selling price with markup
+            const sellingPricePerCup = hppPerCup * (1 + markup / 100);
+            const profitPerCup = sellingPricePerCup - hppPerCup;
+            const totalSellingPrice = sellingPricePerCup * orderQuantity;
+            const totalProfit = profitPerCup * orderQuantity;
+
+            // Update main summary
+            document.getElementById('hppPerCup').textContent = `Rp ${Math.round(hppPerCup).toLocaleString('id-ID')}`;
+            document.getElementById('totalHPP').textContent = `Rp ${Math.round(totalHPP).toLocaleString('id-ID')}`;
+            document.getElementById('totalCups').textContent = orderQuantity;
+
+            // Update per portion details
+            document.getElementById('portionHPP').textContent = `Rp ${Math.round(hppPerCup).toLocaleString('id-ID')}`;
+            document.getElementById('portionIngredientCost').textContent = `Rp ${Math.round(ingredientCostPerBatch / batchSize).toLocaleString('id-ID')}`;
+            document.getElementById('portionPackagingCost').textContent = `Rp ${Math.round(packagingCostPerBatch / batchSize).toLocaleString('id-ID')}`;
+
+            // Update pricing section
+            document.getElementById('sellingPricePerCup').textContent = `Rp ${Math.round(sellingPricePerCup).toLocaleString('id-ID')}`;
+            document.getElementById('profitPerCup').textContent = `Rp ${Math.round(profitPerCup).toLocaleString('id-ID')}`;
+            document.getElementById('totalSellingPrice').textContent = `Rp ${Math.round(totalSellingPrice).toLocaleString('id-ID')}`;
+            document.getElementById('totalProfit').textContent = `Rp ${Math.round(totalProfit).toLocaleString('id-ID')}`;
+        }
+
+        // Initialize calculation
+        calculateHPP();
+    </script>
+</body>
+</html>
